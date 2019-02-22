@@ -2,6 +2,11 @@ $script = <<-SCRIPT
 
 echo "cd /vagrant" >> /home/vagrant/.profile
 echo "The Virtual Machine is up"
+echo "Running Fabric set up"
+
+cd /vagrant/scripts
+chmod 755 setup-env.sh
+sudo ./setup-env.sh
 SCRIPT
 
 Vagrant.configure("2") do |config|
@@ -10,17 +15,12 @@ Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-16.04"
     config.vm.boot_timeout = 600
 
-    config.ssh.username = 'sanjay'
-    config.ssh.password = 'welcome1'
+    config.ssh.username = 'vagrant'
+    config.ssh.password = 'vagrant'
     config.ssh.insert_key = 'true'
 
-
     # Ports foward
-    # For SSH
-   # config.vm.network "forwarded_port", guest: 2222, host: 2222
-    # For playground
-    config.vm.network "forwarded_port", guest: 8080, host: 8080
-    
+   
     # For REST Server
     config.vm.network "forwarded_port", guest: 3000, host: 3000
     
@@ -43,18 +43,9 @@ Vagrant.configure("2") do |config|
     # For CA Container
     config.vm.network "forwarded_port", guest: 7054, host: 7054
     
-    # For CouchDB Container
-    config.vm.network "forwarded_port", guest: 5984, host: 5984
-
-    # For Kafka Manager
-    config.vm.network "forwarded_port", guest: 9000, host: 9000
-
-
-    # This gets executed for both vm1 & vm2
+    config.vm.provision "docker"
     #config.vm.provision "shell", inline:  "echo 'All good'"
     config.vm.provision "shell", inline:  $script
-
-    config.vm.provision "docker"
   
     # To use a diffrent Hypervisor create a section config.vm.provider
     # And comment out the following section
@@ -71,7 +62,7 @@ Vagrant.configure("2") do |config|
 
     # Configuration for Windows Hyperv
     config.vm.provider :hyperv do |hv|
-      vb.name = "blockchain-assignment"  
+      hv.name = "blockchain-assignment"  
       # Change the memory here if needed - 2 Gb memory on Virtual Box VM
       hv.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
       # Change this only if you need destop for Ubuntu - you will need more memory
