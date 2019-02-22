@@ -9,7 +9,7 @@ cd /vagrant/orderer/scripts
 ./clean.sh
 
 #Clean the peer folders
-cd /vagrant/peer/scripts
+cd /vagrant/peers/scripts
 ./clean.sh
 
 

@@ -6,17 +6,21 @@ then
     exit 0
 fi
 
+cd ..
 rm -rf misc
+sudo rm -rf ./bin 2> /dev/null
 
-echo "Set up go"
+echo "setting up go..."
 sudo apt-get update
 sudo apt-get -y install golang-1.10-go
 
 # Setup the Gopath & Path
 mkdir -p /vagrant/misc/gopath
-export GOPATH=/vagrant/misc/gopath
-export PATH=$PATH:/usr/lib/go-1.10/bin
+source export GOPATH=/vagrant/misc/gopath
+source export PATH=$PATH:/usr/lib/go-1.10/bin
 
+echo "go installation complete."
+echo "setting up fabric-ca. This may take some time..."
 # Get the Fabric CA binaries
 go get -u github.com/hyperledger/fabric-ca/cmd/...
 
@@ -25,17 +29,25 @@ sudo rm /usr/local/fabric-ca-*  2> /dev/null
 sudo cp $GOPATH/bin/* /vagrant/bin
 sudo mv $GOPATH/bin/*    /usr/local/bin
 
-echo "fabric-ca setup complete"
+echo "fabric-ca setup complete."
+echo "setting up fabric binaries. This may take some time..."
 
-curl -sSL http://bit.ly/2ysbOFE | bash 1.4.0 1.4.0 0.4.10 -d
+curl -sSL http://bit.ly/2ysbOFE -o bootstrap.sh
+chmod 755 *.sh
+sudo ./bootstrap.sh  1.4.0 1.4.0 0.4.10 -d
 
-rm -rf ./bin 2> /dev/null
-mv fabric-samples/bin .
-cp bin/* /usr/local/bin
+sudo mv fabric-samples/bin .
+sudo cp bin/* /usr/local/bin
 
-mkdir -p misc
-mv fabric-samples ./misc
+sudo mkdir -p misc
+sudo mv fabric-samples ./misc
 
-chmod 755 orderer/scripts/*.sh
-chmod 755 peers/scripts/*.sh
-chmod 755 fabric-ca/scripts/*.sh
+sudo rm bootstrap.sh
+
+echo "fabric binaries setup completed."
+
+chmod 755 /vagrant/orderer/scripts/*.sh
+chmod 755 /vagrant/peers/scripts/*.sh
+chmod 755 /vagrant/fabric-ca/scripts/*.sh
+
+echo "Done"
