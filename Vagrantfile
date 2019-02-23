@@ -2,11 +2,13 @@ $script = <<-SCRIPT
 
 echo "cd /vagrant" >> /home/vagrant/.profile
 echo "The Virtual Machine is up"
-echo "Running Fabric set up"
 
 cd /vagrant/scripts
-chmod 755 setup-env.sh
-sudo ./setup-env.sh
+chmod 755 fabric-setup.sh
+chmod 755 caserver-setup.sh
+
+sudo ./fabric-setup.sh
+sudo ./caserver-setup.sh
 SCRIPT
 
 Vagrant.configure("2") do |config|

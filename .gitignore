@@ -1,3 +1,8 @@
 .vagrant/
 bin/
 misc/
+fabric-ca/client/hospital
+fabric-ca/client/lab
+fabric-ca/client/caserver
+fabric-ca/client/orderer
+fabric-ca/server/
