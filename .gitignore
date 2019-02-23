@@ -8,3 +8,6 @@ fabric-ca/client/orderer
 fabric-ca/server/
 artefacts/
 orderer/orderer.log
+peers/hospital-peer1.log
+peers/lab-peer1.log
+peers/healthcarechannel-genesis.block

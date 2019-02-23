@@ -1,0 +1,3 @@
+killall peer
+
+echo "Done."
