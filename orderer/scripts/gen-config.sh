@@ -1,5 +1,5 @@
 export FABRIC_CFG_PATH=../../config
 
-configtxgen -profile AirlineOrdererGenesis -outputBlock ../../artefacts/airline-genesis.block -channelID ordererchannel
+configtxgen -profile HealthcareOrdererGenesis -outputBlock ../../artefacts/healthcare-genesis.block -channelID ordererchannel
 
-configtxgen -profile AirlineChannel -outputCreateChannelTx ../../artefacts/airline-channel.tx -channelID airlinechannel
+configtxgen -profile HealthcareChannel -outputCreateChannelTx ../../artefacts/healthcare-channel.tx -channelID healthcarechannel

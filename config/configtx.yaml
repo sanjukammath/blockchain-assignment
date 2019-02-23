@@ -210,7 +210,7 @@ Channel: &ChannelDefaults
 #   PROFILES
 Profiles:
 
-  AirlineOrdererGenesis:
+  HealthcareOrdererGenesis:
       <<: *ChannelDefaults
       Orderer:
           <<: *OrdererDefaults
@@ -227,15 +227,15 @@ Profiles:
 
       Consortiums:
 
-        AirlineConsortium:
+        HealthcareConsortium:
             
             Organizations:
                   - <<: *Hospital                               
                   - <<: *Lab
                   
-  AirlineChannel:
+  HealthcareChannel:
     <<: *ChannelDefaults
-    Consortium: AirlineConsortium
+    Consortium: HealthcareConsortium
         
     Application:
         <<: *ApplicationDefaults

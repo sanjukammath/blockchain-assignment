@@ -8,7 +8,7 @@ General:
     # Genesis Block Method = file then GenesisFile need to be specified 
     # The genesis block file need to be generated using the configtxgen tool
     GenesisMethod: file
-    GenesisFile: ../artefacts/airline-genesis.block
+    GenesisFile: ../artefacts/healthcare-genesis.block
 
 
     # Ledger Type can be ram, json or file
