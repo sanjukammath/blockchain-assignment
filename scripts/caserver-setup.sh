@@ -14,7 +14,7 @@ mkdir -p /vagrant/misc/gopath
 export GOPATH=/vagrant/misc/gopath
 export PATH=$PATH:/usr/lib/go-1.10/bin
 
-echo "++++Fetching Fabric CA Binaries"
+echo "++++Fetching Fabric CA Binaries. This may take a few minutes."
 go get -u github.com/hyperledger/fabric-ca/cmd/...
 
 echo "+++Moving Fabric CA Binaries"

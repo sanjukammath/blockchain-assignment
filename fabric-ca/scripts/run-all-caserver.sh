@@ -22,6 +22,8 @@ echo  "+Creating the 2 Peer Identities"
 ./gen-peer-identity.sh hospital hospital-peer1
 ./gen-peer-identity.sh lab lab-peer1
 
+./gen-users-identity.sh
+
 killall fabric-ca-server  &> /dev/null
 
 echo  "DONE. Launch CA Server using ./launch-caserver.sh"

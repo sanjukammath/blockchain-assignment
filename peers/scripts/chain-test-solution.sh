@@ -47,7 +47,7 @@ case $OPERATION in
     
     "create1")
             echo "Create Patient Record 1"
-            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createRecord","","blue","35","tom"]}'
+            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createRecord","patient01@hospital.com","a,b","c,d","e,f","g,h"]}'
         ;;
     "clear")
             echo "Cleaning up Chaincode Docker images"
