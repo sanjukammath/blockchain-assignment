@@ -8,7 +8,7 @@ The patient records chaincode is used to control the patient records ledger. Thi
 
 HOW TO TEST (using scripts)
 
->vagrant up (may take around 7 minutes)
+>vagrant up (may take around 15 minutes)
 
 >vagrant ssh
 
