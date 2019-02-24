@@ -154,8 +154,10 @@ func (t *SimpleChainCode) createRecord(stub shim.ChaincodeStubInterface, args []
 
 	doctor_email, found, err := id.GetAttributeValue("email")
 
-	if err != nil || !found {
+	if err != nil {
 		return shim.Error("Error in email attribute" + err.Error())
+	} else if !found {
+		return shim.Error("Only a user with valid email registered can perform this operation")
 	}
 
 	patientRecordObj := &PatientRecord{"patientRecord", patientID, activeProblems, activeMedications,
@@ -259,8 +261,10 @@ func (t *SimpleChainCode) queryRecord(stub shim.ChaincodeStubInterface, args []s
 	id, err := cid.New(stub)
 
 	invoker_email, ok, err := id.GetAttributeValue("email")
-	if err != nil || !ok {
+	if err != nil {
 		return shim.Error("Error in email attribute" + err.Error())
+	} else if !ok {
+		return shim.Error("Only a user with valid email registered can perform this operation")
 	}
 
 	// lab technician cannot view a record
