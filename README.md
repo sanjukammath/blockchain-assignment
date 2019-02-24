@@ -88,9 +88,9 @@ In you local machine, clone the https://github.com/sanjukammath/blockchain-assig
 
 make sure you have run the scripts uptil instantiation of chaincode at the least.
 
-also in vagrant shell, cd to /vagrant/fabric-ca-scripts and run 
+also in vagrant shell, cd to /vagrant/fabric-ca/scripts and run 
 
->./launch-caserver
+>./launch-caserver.sh
 
 This will bring up the caserver
 
