@@ -6,9 +6,10 @@ Hyperledger Fabric Based Solution:
 
 The patient records chaincode is used to control the patient records ledger. This is deployed as patientrecords:1.0 in the healthcarechannel. Both hospital and lab orgs will be joining this channel. The users are identified by their email id which will be passed as attribute during registration and will be added to Ecert during enrolment. The methods in the chaincode are access controlled. This is done by using the emailid and three additional boolean attributes: doctor, patient, lab.
 
+****************************************************************************************************************
 HOW TO TEST (using scripts)
 
->vagrant up (may take around 7 minutes)
+>vagrant up (may take around 15 minutes)
 
 >vagrant ssh
 
@@ -28,7 +29,7 @@ We will now test the use cases. Set identity context to Hospital Admin and insta
 
 if this times out, run again. It should work.
 
-***************************************************************************************************************
+****************************************************************************************************************
 Apart from install and instantiate, the chain-test-solution.sh can be run with the following arguments.
 
 create1/create2: Create patient record for patient with email id patien01@hospital.com/patien02@hospital.com
@@ -78,3 +79,33 @@ This should not work.
 
 >./chain-test-solution.sh query2
 This should work
+
+****************************************************************************************************************
+
+HOW TO TEST (using node app)
+
+In you local machine, clone the https://github.com/sanjukammath/blockchain-assignment-node-app repository
+
+make sure you have run the scripts uptil instantiation of chaincode at the least.
+
+also in vagrant shell, cd to /vagrant/fabric-ca-scripts and run 
+
+>./launch-caserver
+
+This will bring up the caserver
+
+in the node-app root folder
+
+>npm install
+
+>node enrollAdmin.js
+
+>node registerDoctor3.js
+
+>node registerPatient3.js
+
+>node registerlabtech3.js
+
+>node createRecord.js
+
+>node queryRecord.js

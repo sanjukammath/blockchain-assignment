@@ -1,0 +1,5 @@
+I have developed this project in a windows 7 Professional 64-bit sytem with 8 GB Ram. 
+The project uses vagrant for development which creates a virtual machine using Virtual Box or hyperv. 
+Please install vagrant from https://www.vagrantup.com/downloads.html.
+
+If you are not using windows 10, then you have to download Virtual Box as well.
