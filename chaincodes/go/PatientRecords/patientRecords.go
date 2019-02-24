@@ -266,7 +266,7 @@ func (t *SimpleChainCode) queryRecord(stub shim.ChaincodeStubInterface, args []s
 	// lab technician cannot view a record
 	err = id.AssertAttributeValue("lab", "true")
 	if err == nil {
-		return shim.Error("Authorization to view records failed. You are not authorized to view a patient's record" + err.Error())
+		return shim.Error("Authorization to view records failed. You are not authorized to view a patient's record")
 	}
 	err = id.AssertAttributeValue("patient", "true")
 	if err == nil {
