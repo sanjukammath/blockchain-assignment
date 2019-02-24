@@ -1,5 +1,5 @@
-source export FABRIC_CA_SERVER_HOME=$PWD/../server 
-source export FABRIC_CA_CLIENT_HOME=$PWD/../client
+export FABRIC_CA_SERVER_HOME=$PWD/../server 
+export FABRIC_CA_CLIENT_HOME=$PWD/../client
 
 echo  "Initializing the fabric CA Server"
 ./init-fabric-ca.sh

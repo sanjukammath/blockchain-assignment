@@ -4,65 +4,76 @@ In healthcare, a patient has their health record fragmented across multiple loca
 
 Hyperledger Fabric Based Solution:
 
-Identity affiliations available (replaced in the fabric-ca-server-config.yaml via script):
-affiliations:
-   orderer:
-      - support
-   hospital:
-      - doctors
-      - accounting
-      - patients
-   lab:
-      - technician
-
-The patientrecords chaincode is used to control the patient records ledger. This is deployed in the patients channel. The patient is identified by his email id. Both hospital and lab orgs will be joining this channel. The queryRecord and queryHistory methods in the chaincode are access controlled.
+The patient records chaincode is used to control the patient records ledger. This is deployed as solution:1.0 in the healthcarechannel. Both hospital and lab orgs will be joining this channel. The users are identified by their email id which will be passed as attribute during registration and will be added to Ecert during enrolment. The methods in the chaincode are access controlled. This is done by using the emailid and three additional boolean attributes: doctor, patient, lab.
 
 HOW TO TEST (using scripts)
 
-vagrant up (may take around 7 minutes)
+>vagrant up (may take around 7 minutes)
 
-vagrant ssh
+>vagrant ssh
 
-cd fabric-ca/scripts
+>cd scripts
 
-./run-all-caserver.sh
-this command creates the various basic identities(admin, orgs, orderer, peers). Once it is done, ca server will be down.
+>./run-all.sh
 
-./launch-caserver.sh
-the ca-server will now be 'Listening on http://0.0.0.0:7054'
+This command will bring up all the necessary fabric componenets and also create 4 user identities as defined in the file /fabric-ca/scripts/gen-users-identity.sh script.
 
-open a new terminal
+We will now test the use cases. Set identity context to Hospital Admin and instantiate the chaindode to continue...
 
-vagrant up (only if you get error if you try directly vagrnt ssh)
+>cd ../peers/scripts
 
-vagrant ssh
+>. set-env.sh hospital 7050 admin
 
-cd orderer/scripts
+>./chain-test-solution.sh instantiate
 
-./run-all-orderer.sh
-this will create the genesis block, channel transaction file and then brings up the orderer
-please check orderer logs (orderer/orderer.log), everything should be fine
+if this times out, run again. It should work.
 
-cd ../../peers/scripts
+***************************************************************************************************************
+Apart from install and instantiate, the chain-test-solution.sh can be run with the following arguments.
 
-./run-all-peers.sh
-this will bring up the peers.
+create1/create2: Create patient record for patient with email id patien01@hospital.com/patien02@hospital.com
 
-we will now install the chaincode one by one on each of the peers.
+query1/query2: Query the world state for patient with email id patien01@hospital.com/patien02@hospital.com
 
-. set-env.sh hospital admin
+vitals1/vitals2: update the vitals of patient1
+****************************************************************************************************************
 
-./chain-test-solution.sh install
+>./chain-test-solution.sh create1
+This is trying to create a patient record. But since the identity is admin and not of a doctor, it will fail.
 
-./chain-test-solution.sh instantiate
+>. set-env.sh hospital 7050 patient01
 
-./chain-test-solution.sh create1
+>./chain-test-solution.sh create1
+This will also fail because, a patient cannot create a record.
 
-this should give error because admin is not doctor.
+>. set-env.sh lab 9050 lab_tech01
 
-. set-env.sh hospital doctor01
+>./chain-test-solution.sh create1
+This will also fail because, a lab technician cannot create a record.
 
-./chain-test-solution.sh query1
+>. set-env.sh hospital 7050 doctor01
+
+>./chain-test-solution.sh create1
+This should work. The record will be created and can be viewed in the response.
+
+>./chain-test-solution.sh create2
+This should work. The record will be created and can be viewed in the response.
+
+>. set-env.sh hospital 7050 patient01
+
+>./chain-test-solution.sh query1
+This should work.
+
+>./chain-test-solution.sh query2
+This should not work.
+
+>. set-env.sh hospital 7050 patient02
+
+>./chain-test-solution.sh query1
+This should not work.
+
+>./chain-test-solution.sh query2
+This should work
 
 
 

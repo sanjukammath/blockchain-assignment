@@ -98,6 +98,13 @@ func (t *SimpleChainCode) createRecord(stub shim.ChaincodeStubInterface, args []
 		return shim.Error("patient ID is a mandatory field")
 	}
 
+	recordBytes, err := stub.GetState(patientID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if recordBytes != nil {
+		return shim.Error("Record is already existing in the ledger, cannot create duplicate")
+	}
+
 	if len(vitalsString) == 0 {
 		return shim.Error("Please send at least the patient vitals")
 	}
@@ -145,9 +152,9 @@ func (t *SimpleChainCode) createRecord(stub shim.ChaincodeStubInterface, args []
 		return shim.Error("Error in doctor attribute" + err.Error())
 	}
 
-	doctor_email, ok, err := id.GetAttributeValue("email")
+	doctor_email, found, err := id.GetAttributeValue("email")
 
-	if err != nil || !ok {
+	if err != nil || !found {
 		return shim.Error("Error in email attribute" + err.Error())
 	}
 
@@ -155,7 +162,7 @@ func (t *SimpleChainCode) createRecord(stub shim.ChaincodeStubInterface, args []
 		historicalProblems, historicalMedication, vitalRecord, doctor_email, "Patient Record Created"}
 
 	//Convert Item object to Bytes. Put state take value input in byte array
-	recordBytes, err := json.Marshal(patientRecordObj)
+	recordBytes, err = json.Marshal(patientRecordObj)
 	if err != nil {
 		//Marshal() failed
 		return shim.Error(err.Error())
@@ -171,14 +178,133 @@ func (t *SimpleChainCode) createRecord(stub shim.ChaincodeStubInterface, args []
 }
 
 func (t *SimpleChainCode) addMedication(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// the doctor can suggest new medication
+	return shim.Error("Not Implemented Yet")
+}
+
+func (t *SimpleChainCode) addCondition(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// the doctor can add a new medical medication
+	return shim.Error("Not Implemented Yet")
+}
+
+func (t *SimpleChainCode) removeCondition(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	// the doctor can make a medical condition historical
 	return shim.Error("Not Implemented Yet")
 }
 
 func (t *SimpleChainCode) addLabReport(stub shim.ChaincodeStubInterface, args []string) pb.Response {
-	return shim.Error("Not Implemented Yet")
+	//the lab technician will add a Lab Report to the patient. input emailid, blood pressure and blood glucose.
+	if len(args) != 3 {
+		return shim.Error("Wrong number of arguments, expecting 3")
+	}
+
+	id, err := cid.New(stub)
+
+	invoker_email, found, err := id.GetAttributeValue("email")
+	if err != nil || !found {
+		return shim.Error("Error in email attribute" + err.Error())
+	}
+
+	if id.AssertAttributeValue("lab", "true") != nil && id.AssertAttributeValue("doctor", "true") != nil {
+		return shim.Error("Authorization to update records failed. You are not authorized to update Vitals of a patient, " + invoker_email)
+	}
+
+	patientID := args[0]
+	bloodPressure := args[1]
+	bloodGlucose := args[2]
+
+	patientRecordBytes, err := stub.GetState(patientID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if patientRecordBytes == nil {
+		return shim.Error("Invalid ID: " + patientID)
+	}
+
+	var patientRecordObj PatientRecord
+
+	err = json.Unmarshal(patientRecordBytes, &patientRecordObj)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	patientRecordObj.Vitals.BloodPressure = bloodPressure
+	patientRecordObj.Vitals.BloodGlucose = bloodGlucose
+	patientRecordObj.Event = "Vitals updated by: " + invoker_email
+
+	//Convert Item object to Bytes. Put state take value input in byte array
+	recordBytes, err := json.Marshal(patientRecordObj)
+	if err != nil {
+		//Marshal() failed
+		return shim.Error(err.Error())
+	}
+
+	err = stub.PutState(patientID, recordBytes)
+	if err != nil {
+		//PutState() failed
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(nil)
 }
 
 func (t *SimpleChainCode) queryRecord(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	// email id of the patient record to query
-	return shim.Error("Not Implemented Yet")
+	if len(args) != 1 {
+		return shim.Error("Wrong number of arguments, expecting 1")
+	}
+
+	patientID := args[0]
+	authorised := false
+
+	id, err := cid.New(stub)
+
+	invoker_email, ok, err := id.GetAttributeValue("email")
+	if err != nil || !ok {
+		return shim.Error("Error in email attribute" + err.Error())
+	}
+
+	// lab technician cannot view a record
+	err = id.AssertAttributeValue("lab", "true")
+	if err == nil {
+		return shim.Error("Authorization to view records failed. You are not authorized to view a patient's record" + err.Error())
+	}
+	err = id.AssertAttributeValue("patient", "true")
+	if err == nil {
+		// is the patient querying his record
+		if invoker_email != patientID {
+			return shim.Error("Authorization to view records failed. You, " + invoker_email + " are not authorized to view another patient's record")
+		} else {
+			authorised = true
+		}
+	}
+
+	patientRecordBytes, err := stub.GetState(patientID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if patientRecordBytes == nil {
+		return shim.Error("Invalid ID: " + patientID)
+	}
+
+	var patientRecordObj PatientRecord
+
+	err = json.Unmarshal(patientRecordBytes, &patientRecordObj)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	doctor := patientRecordObj.DoctorInCharge
+
+	// is the invoker a doctor
+	if authorised == false {
+		err = id.AssertAttributeValue("doctor", "true")
+		if err != nil {
+			return shim.Error("You are not authorized to view a patient's record")
+		} else {
+			if invoker_email != doctor {
+				return shim.Error("You, " + invoker_email + " are not authorized to view the record of another doctor's(" + doctor + ") patient")
+			}
+		}
+	}
+
+	return shim.Success(patientRecordBytes)
 }

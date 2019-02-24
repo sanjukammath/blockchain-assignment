@@ -1,5 +1,5 @@
 function    usage {
-    echo  "Usage: ./chain-test.sh    install | instantiate | invoke | query "
+    echo  "Usage: ./chain-test.sh    install | instantiate | create1 | query1 | vitals1 "
     echo  "Utility for testing peeer/channel setup with chaincode"
 }
 
@@ -23,15 +23,13 @@ fi
 export GOPATH=/vagrant/misc/gopath
 export PATH=$PATH:/usr/lib/go-1.10/bin
 
-cp -r /vagrant/chaincodes $GOPATH/src/
-
-
-
 echo "CC Operation : $OPERATION    for   Org: $CURRENT_ORG_NAME"
 
 # Invoke the "peer chain code" command using the operation
 case $OPERATION in
     "install") 
+
+              cp -r /vagrant/chaincodes $GOPATH/src/
               peer chaincode install  -n $CC_NAME -p $CC_PATH -v $CC_VERSION
 
               peer chaincode list --installed -C $CC_CHANNEL_ID
@@ -40,22 +38,28 @@ case $OPERATION in
               peer chaincode instantiate -C $CC_CHANNEL_ID -n $CC_NAME  -v $CC_VERSION -c $CC_CONSTRUCTOR  -o $ORDERER_ADDRESS
         ;;
     "query1")
-            peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["readMarble","marble1"]}'
-            peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["getMarblesByRange","marble1","marble3"]}'
-            peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["getHistoryForMarble","marble1"]}'
+            peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["queryRecord","patient01@hospital.com"]}'
+        ;;
+    "query2")
+            peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME -c '{"Args":["queryRecord","patient02@hospital.com"]}'
         ;;
     
     "create1")
             echo "Create Patient Record 1"
-            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createRecord","patient01@hospital.com","a,b","c,d","e,f","g,h"]}'
+            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createRecord","patient01@hospital.com","a,b","c,d","e,f","g,h","i,j"]}'
         ;;
-    "clear")
-            echo "Cleaning up Chaincode Docker images"
-            docker rmi -f $(docker images -q | grep dev-)
+    
+    "create2")
+            echo "Create Patient Record 1"
+            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["createRecord","patient02@hospital.com","a,b","c,d","e,f","g,h","i,j"]}'
+        ;;
+
+    "vitals1")
+            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["updateRecordforLab","patient01@hospital.com","normal","normal"]}'
+        ;;
+    "vitals2")
+            peer chaincode invoke -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["updateRecordforLab","patient02@hospital.com","normal","abnormal"]}'
         ;;
     *) usage
         ;;
 esac
-
-
-
