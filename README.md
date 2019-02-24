@@ -4,7 +4,7 @@ In healthcare, a patient has their health record fragmented across multiple loca
 
 Hyperledger Fabric Based Solution:
 
-The patient records chaincode is used to control the patient records ledger. This is deployed as solution:1.0 in the healthcarechannel. Both hospital and lab orgs will be joining this channel. The users are identified by their email id which will be passed as attribute during registration and will be added to Ecert during enrolment. The methods in the chaincode are access controlled. This is done by using the emailid and three additional boolean attributes: doctor, patient, lab.
+The patient records chaincode is used to control the patient records ledger. This is deployed as patientrecords:1.0 in the healthcarechannel. Both hospital and lab orgs will be joining this channel. The users are identified by their email id which will be passed as attribute during registration and will be added to Ecert during enrolment. The methods in the chaincode are access controlled. This is done by using the emailid and three additional boolean attributes: doctor, patient, lab.
 
 HOW TO TEST (using scripts)
 
@@ -59,6 +59,10 @@ This should work. The record will be created and can be viewed in the response.
 >./chain-test-solution.sh create2
 This should work. The record will be created and can be viewed in the response.
 
+>. set-env.sh lab 9050 lab_tech01
+
+>./chain-test-solution.sh vitals1
+
 >. set-env.sh hospital 7050 patient01
 
 >./chain-test-solution.sh query1
@@ -74,7 +78,3 @@ This should not work.
 
 >./chain-test-solution.sh query2
 This should work
-
-
-
-

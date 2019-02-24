@@ -1,5 +1,5 @@
 function    usage {
-    echo  "Usage: ./chain-test.sh    install | instantiate | create1 | query1 | vitals1 "
+    echo  "Usage: ./chain-test.sh    install | instantiate | create[1|2] | query[1|2] | vitals[1|2] "
     echo  "Utility for testing peeer/channel setup with chaincode"
 }
 
@@ -8,7 +8,7 @@ export FABRIC_LOGGING_SPEC=info
 OPERATION=$1
 
 export CC_CONSTRUCTOR='{"Args":[]}'
-export CC_NAME="solution"
+export CC_NAME="patientrecords"
 export CC_PATH="chaincodes/go/PatientRecords"
 export CC_VERSION="1.0"
 export CC_CHANNEL_ID="healthcarechannel"
